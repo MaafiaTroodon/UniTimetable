@@ -58,11 +58,7 @@ include('../includes/header.php');
                             echo "<td>" . htmlspecialchars($course['instructor'] ?? 'N/A') . "</td>";
                             echo "<td>" . htmlspecialchars($course['schedule'] ?? 'N/A') . "</td>";
                             echo "<td>";
-                            if ($loggedIn) {
-                                echo '<button class="btn btn-primary" onclick="addToSchedule(\'' . htmlspecialchars($course['course_code']) . '\')">Add to Schedule</button>';
-                            } else {
-                                echo '<span>Login to add courses</span>';
-                            }
+                            echo '<button class="button-animate" onclick="handleAddToSchedule(\'' . htmlspecialchars($course['course_code']) . '\')">Add to Schedule</button>';
                             echo "</td></tr>";
                         }
                     } else {
@@ -125,6 +121,45 @@ document.addEventListener("DOMContentLoaded", function () {
         filterOptions.classList.toggle("d-none");
     });
 });
+function handleAddToSchedule(courseCode) {
+    const isLoggedIn = <?php echo json_encode($loggedIn); ?>;
+    
+    if (isLoggedIn) {
+        addToSchedule(courseCode);
+    } else {
+        showNotification('Please log in to add courses to your schedule.', 'error');
+    }
+}
+
+function addToSchedule(courseCode) {
+    const button = document.querySelector(`button[onclick="handleAddToSchedule('${courseCode}')"]`);
+
+    fetch('../includes/add_course.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'course_code=' + encodeURIComponent(courseCode)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            button.classList.add("animate"); // Trigger animation
+
+            // Remove the 'animate' class after 600ms to reset the animation
+            setTimeout(() => {
+                button.classList.remove("animate");
+            }, 600);
+        } else {
+            showNotification(data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('An error occurred while adding the course. Please try again.', 'error');
+    });
+}
 
 function applyFilters() {
     const searchTerm = document.getElementById("search-bar").value;
@@ -182,30 +217,22 @@ document.querySelectorAll(".day-checkbox").forEach(checkbox => {
     checkbox.addEventListener("change", applyFilters);
 });
 
-function addToSchedule(courseCode) {
-    fetch('../includes/add_course.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: 'course_code=' + encodeURIComponent(courseCode)
-    })
-    .then(response => {
-        if (!response.ok) throw new Error("Network response was not ok");
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            showNotification(data.message, 'success');
-        } else {
-            showNotification(data.error, 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('An error occurred while adding the course. Please try again.', 'error');
-    });
+function fetchAndRefreshTimetable() {
+    fetch('../files/timetable.json')
+        .then(response => {
+            if (!response.ok) throw new Error("Network response was not ok");
+            return response.json();
+        })
+        .then(courses => {
+            updateCourseTable(courses); // Call the existing update function to refresh table data
+        })
+        .catch(error => {
+            console.error('Error fetching timetable data:', error);
+        });
 }
+
+// Set up a 30-second interval to refresh the timetable
+setInterval(fetchAndRefreshTimetable, 30000);
 </script>
 
 <?php

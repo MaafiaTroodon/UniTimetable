@@ -378,10 +378,11 @@ body.bg-light-grey {
 
 
 .custom-table tbody tr td {
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)); /* Black gradient */
-
+  background: linear-gradient(to bottom,rgb(203, 220, 235, 0.7) , rgba(0, 0, 0, 0.4)); /* Black gradient */
+  color: #54473F !important; /* Light pink text */
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding: 10px;
+  
 }
 
 .custom-table tbody tr {
@@ -394,4 +395,134 @@ body.bg-light-grey {
 .container, .filter-container, .table-responsive {
   position: relative;
   z-index: 1;
+}
+
+/* Animation For addToSchedule Button */
+.button-animate {
+  position: relative;
+  padding: 10px 22px;
+  border-radius: 6px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  background-color: #7d2ae8;
+  transition: all 0.2s ease;
+}
+
+.button-animate:active {
+  transform: scale(0.96);
+}
+
+.button-animate:before,
+.button-animate:after {
+  position: absolute;
+  content: "";
+  width: 150%;
+  left: 50%;
+  height: 100%;
+  transform: translateX(-50%);
+  z-index: -1000;
+  background-repeat: no-repeat;
+}
+
+.button-animate.animate::before {
+  top: -70%;
+  background-image: radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, transparent 20%, #7d2ae8 20%, transparent 30%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, #7d2ae8 15%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%);
+  background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 10% 10%, 18% 18%;
+  animation: topBubbles 0.6s ease-in-out forwards;
+}
+
+@keyframes topBubbles {
+  0% {
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+  }
+  100% {
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+
+.button-animate.animate::after {
+  bottom: -70%;
+  background-image: radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, #7d2ae8 15%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%),
+    radial-gradient(circle, #7d2ae8 20%, transparent 20%);
+  background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
+  animation: bottomBubbles 0.6s ease-in-out forwards;
+}
+
+@keyframes bottomBubbles {
+  0% {
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+  }
+  100% {
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+
+/* Style for the Drop button similar to Add to Schedule */
+.button-animate-drop {
+  position: relative;
+  padding: 10px 22px;
+  border-radius: 6px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  background-color: #e74c3c; /* Red for Drop button */
+  transition: all 0.2s ease;
+}
+
+.button-animate-drop:active {
+  transform: scale(0.96);
+}
+
+.button-animate-drop.animate::before,
+.button-animate-drop.animate::after {
+  position: absolute;
+  content: "";
+  width: 150%;
+  left: 50%;
+  height: 100%;
+  transform: translateX(-50%);
+  z-index: -1000;
+  background-repeat: no-repeat;
+}
+
+.button-animate-drop.animate::before {
+  top: -70%;
+  background-image: radial-gradient(circle, #e74c3c 20%, transparent 20%),
+                    radial-gradient(circle, transparent 20%, #e74c3c 20%, transparent 30%),
+                    radial-gradient(circle, #e74c3c 20%, transparent 20%),
+                    radial-gradient(circle, #e74c3c 20%, transparent 20%),
+                    radial-gradient(circle, transparent 10%, #e74c3c 15%, transparent 20%),
+                    radial-gradient(circle, #e74c3c 20%, transparent 20%),
+                    radial-gradient(circle, #e74c3c 20%, transparent 20%),
+                    radial-gradient(circle, #e74c3c 20%, transparent 20%),
+                    radial-gradient(circle, #e74c3c 20%, transparent 20%);
+  background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 10% 10%, 18% 18%;
+  animation: topBubbles 0.6s ease-in-out forwards;
+}
+
+.button-animate-drop.animate::after {
+  bottom: -70%;
+  background-image: radial-gradient(circle, #e74c3c 20%, transparent 20%),
+                    radial-gradient(circle, #e74c3c 20%, transparent 20%),
+                    radial-gradient(circle, transparent 10%, #e74c3c 15%, transparent 20%),
+                    radial-gradient(circle, #e74c3c 20%, transparent 20%),
+                    radial-gradient(circle, #e74c3c 20%, transparent 20%),
+                    radial-gradient(circle, #e74c3c 20%, transparent 20%);
+  background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
+  animation: bottomBubbles 0.6s ease-in-out forwards;
 }

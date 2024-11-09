@@ -8,9 +8,7 @@
 require_once 'db.php';
 session_start();
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+header('Content-Type: application/json');
 
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -19,7 +17,8 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $course_code = $_POST['course_code'] ?? '';
+    // Validate and sanitize course code
+    $course_code = filter_var($_POST['course_code'] ?? '');
 
     if (empty($course_code)) {
         echo json_encode(['success' => false, 'error' => 'Course code is required.']);
@@ -28,10 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $user_id = $_SESSION['user_id'];
 
-    // Use $mysqli_course to check if the course exists
+    // Check if the course exists
     $stmt = $mysqli->prepare("SELECT id FROM courses WHERE course_code = ?");
     if (!$stmt) {
-        echo json_encode(['success' => false, 'error' => 'Database error: ' . $mysqli_course->error]);
+        error_log("Database error: " . $mysqli->error); // Log error for debugging
+        echo json_encode(['success' => false, 'error' => 'An unexpected error occurred.']);
         exit();
     }
     $stmt->bind_param("s", $course_code);
@@ -50,7 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if the course is already in the user's schedule
     $stmt = $mysqli->prepare("SELECT id FROM schedule WHERE user_id = ? AND course_id = ?");
     if (!$stmt) {
-        echo json_encode(['success' => false, 'error' => 'Database error: ' . $mysqli_course->error]);
+        error_log("Database error: " . $mysqli->error);
+        echo json_encode(['success' => false, 'error' => 'An unexpected error occurred.']);
         exit();
     }
     $stmt->bind_param("ii", $user_id, $course_id);
@@ -67,7 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Add course to user's schedule
     $stmt = $mysqli->prepare("INSERT INTO schedule (user_id, course_id) VALUES (?, ?)");
     if (!$stmt) {
-        echo json_encode(['success' => false, 'error' => 'Database error: ' . $mysqli_course->error]);
+        error_log("Database error: " . $mysqli->error);
+        echo json_encode(['success' => false, 'error' => 'An unexpected error occurred.']);
         exit();
     }
     $stmt->bind_param("ii", $user_id, $course_id);
@@ -75,9 +77,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($stmt->execute()) {
         echo json_encode(['success' => true, 'message' => 'Course successfully added to your schedule.']);
     } else {
-        echo json_encode(['success' => false, 'error' => 'Failed to add course to schedule.']);
+        error_log("Failed to add course to schedule for user_id {$user_id} and course_id {$course_id}");
+        echo json_encode(['success' => false, 'error' => 'Failed to add course to schedule. Please try again later.']);
     }
     $stmt->close();
 } else {
-    echo json_encode(['success' => false, 'error' => 'Invalid request.']);
+    echo json_encode(['success' => false, 'error' => 'Invalid request method.']);
 }
+?>

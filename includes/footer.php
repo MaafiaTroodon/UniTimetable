@@ -5,15 +5,17 @@
     Assignment 3 (footer.php)
 */
 ?>
-</div>
+</div> <!-- Closing main container div from header -->
+
 <!-- Footer -->
-<footer class="bg-white text-center text-lg-start shadow-sm mt-5">
+<footer class="bg-white text-center text-lg-start shadow-sm mt-5" aria-label="Footer">
     <div class="text-center p-3">
-        <span class="text-muted">Dalhousie University - Server Side Scripting Assignment</span>
+        <!-- Dynamic year display -->
+        <span class="text-muted">&copy; <?php echo date("Y"); ?> Dalhousie University - Server Side Scripting Assignment</span>
     </div>
 </footer>
-<!-- Bootstrap JS -->
+
+<!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
