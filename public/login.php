@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_result($user_id, $stored_password);
         $stmt->fetch();
 
-        // Plain-text password comparison (for demonstration purposes)
+        // Plain-text password comparison 
         if ($password === $stored_password) {
             // Set session variables
             $_SESSION['user_id'] = $user_id;
@@ -92,6 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <a href="index.php" class="btn-view-schedule">View Course Schedule</a>
 </div>
 <script>
+    
 // Show/Hide Password functionality
 document.getElementById("togglePassword").addEventListener("click", function () {
     const passwordField = document.getElementById("password");

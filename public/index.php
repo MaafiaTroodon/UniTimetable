@@ -71,10 +71,11 @@ include('../includes/header.php');
     </div>
 </main>
 
-<!-- Link to response.js and other necessary scripts -->
-<script src="../assets/responsive.js"></script> <!-- Assuming response.js is in ../assets/ -->
+<!-- Links to necessery assets -->
+<script src="../assets/responsive.js"></script> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
+    
 // Three.js knot setup
 document.addEventListener("DOMContentLoaded", function () {
     const scene = new THREE.Scene();
@@ -201,15 +202,24 @@ function updateCourseTable(courses, errorMessage = "") {
 
     if (courses.length > 0) {
         courses.forEach(course => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td>${course.course_code}</td>
-                <td>${course.course_name}</td>
-                <td>${course.instructor}</td>
-                <td>${course.schedule}</td>
-                <td><button class="btn btn-primary" onclick="addToSchedule('${course.course_code}')">Add to Schedule</button></td>
-            `;
-            courseTable.appendChild(row);
+            // Safely check each field and provide a default value if it’s missing
+            const courseCode = course.course_code || 'N/A';
+            const courseName = course.name || 'N/A';
+            const instructor = course.instructor || 'N/A';
+            const schedule = course.schedule || 'N/A';
+
+            // Only add a row if the course has a code and schedule (as they are essential fields)
+            if (courseCode !== 'N/A' && schedule !== 'N/A') {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${courseCode}</td>
+                    <td>${courseName}</td>
+                    <td>${instructor}</td>
+                    <td>${schedule}</td>
+                    <td><button class="btn btn-primary" onclick="addToSchedule('${courseCode}')">Add to Schedule</button></td>
+                `;
+                courseTable.appendChild(row);
+            }
         });
     } else {
         courseTable.innerHTML = "<tr><td colspan='5'>No courses found matching your criteria.</td></tr>";
@@ -223,13 +233,21 @@ document.querySelectorAll(".day-checkbox").forEach(checkbox => {
 });
 
 function fetchAndRefreshTimetable() {
-    fetch('../files/timetable.json')
+    fetch(`../files/timetable.json?cacheBust=${new Date().getTime()}`)
         .then(response => {
             if (!response.ok) throw new Error("Network response was not ok");
             return response.json();
         })
         .then(courses => {
-            updateCourseTable(courses); // Call the existing update function to refresh table data
+            // Log to check if data has the correct fields
+            console.log(courses); 
+
+            // Check if courses data is valid before updating the table
+            if (Array.isArray(courses)) {
+                updateCourseTable(courses);
+            } else {
+                console.error('Invalid data format in timetable.json');
+            }
         })
         .catch(error => {
             console.error('Error fetching timetable data:', error);
@@ -238,6 +256,8 @@ function fetchAndRefreshTimetable() {
 
 // Set up a 30-second interval to refresh the timetable
 setInterval(fetchAndRefreshTimetable, 30000);
+
+
 </script>
 
 <?php
