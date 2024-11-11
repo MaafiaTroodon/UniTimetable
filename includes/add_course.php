@@ -18,7 +18,7 @@ if (!isset($_SESSION['user_id'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate and sanitize course code
-    $course_code = filter_var($_POST['course_code'] ?? '');
+    $course_code = filter_var($_POST['course_code'] ?? '', FILTER_SANITIZE_STRING);
 
     if (empty($course_code)) {
         echo json_encode(['success' => false, 'error' => 'Course code is required.']);
@@ -26,6 +26,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $user_id = $_SESSION['user_id'];
+
+    // Ensure the database connection is active
+    if ($mysqli->connect_error) {
+        error_log("Database connection error: " . $mysqli->connect_error);
+        echo json_encode(['success' => false, 'error' => 'Database connection error. Please try again later.']);
+        exit();
+    }
 
     // Check if the course exists
     $stmt = $mysqli->prepare("SELECT id FROM courses WHERE course_code = ?");

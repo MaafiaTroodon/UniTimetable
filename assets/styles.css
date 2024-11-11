@@ -32,7 +32,7 @@ h3 {
   font-weight: bold;
 }
 h1{
-  color: #ffcb00; /* Matches header color as per requirement */
+  color: #ffcb00; 
   font-weight: bold;
 }
 
@@ -204,6 +204,7 @@ h1 a:hover, h2 a:hover, h3 a:hover, .navbar a:hover, .footer a:hover {
   transform: scale(1.05); /* Slightly increase size */
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); /* Add shadow on hover */
 }
+
 /* Specific Pop Effect for 'Add to Schedule' Button */
 .btn-primary:hover {
   background-color: #ffb300; /* Change color on hover */
@@ -325,7 +326,7 @@ body.bg-light-grey {
 }
 
 
-/* CSS for the filter button */
+
 /* Filter Toggle Button */
 #filter-toggle {
   background-color: #A5B68D;
@@ -500,6 +501,7 @@ body.bg-light-grey {
   background-repeat: no-repeat;
 }
 
+/* Prtical pop Animation for the Add to schedule button*/
 .button-animate-drop.animate::before {
   top: -70%;
   background-image: radial-gradient(circle, #e74c3c 20%, transparent 20%),
@@ -525,4 +527,133 @@ body.bg-light-grey {
                     radial-gradient(circle, #e74c3c 20%, transparent 20%);
   background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
   animation: bottomBubbles 0.6s ease-in-out forwards;
+}
+
+
+
+/* Box for dropping the course */
+/* Custom Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 400px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
+  animation: popIn 0.3s ease;
+}
+
+.modal-content h2 {
+  color: #dc3545;
+  font-size: 1.5em;
+  margin-bottom: 15px;
+}
+
+.modal-content p {
+  font-size: 1.1em;
+  color: #333;
+  margin-bottom: 25px;
+}
+
+/* Button Container */
+.modal-content .button-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+/* "Yes" and "No" Buttons */
+#confirm-drop, #cancel-drop {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#confirm-drop {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+#cancel-drop {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+#confirm-drop:hover, #cancel-drop:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Animation */
+@keyframes popIn {
+  from {
+      transform: scale(0.9);
+      opacity: 0;
+  }
+  to {
+      transform: scale(1);
+      opacity: 1;
+  }
+}
+
+/* Container for the "View Course Schedule" option */
+.view-schedule-container {
+  background: linear-gradient(135deg, #755d99, #e2dbc9);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+  max-width: 400px;
+  margin: 20px auto 0; /* Align with the login container */
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.view-schedule-container:hover {
+  transform: scale(1.02); /* Slight scale-up on hover */
+}
+
+/* Text styling within the View Schedule box */
+.view-schedule-container p {
+  color: #333;
+  font-size: 1em;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+/* Styling for the "View Course Schedule" button */
+.btn-view-schedule {
+  display: inline-block;
+  background-color: #ffb300;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-view-schedule:hover {
+  background-color: #ffcb00;
+  transform: scale(1.05);
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2), 0px 0px 10px rgba(255, 203, 0, 0.7); /* Stronger glow */
 }

@@ -132,6 +132,7 @@ function handleAddToSchedule(courseCode) {
 }
 
 function addToSchedule(courseCode) {
+    // Try to find the button associated with the courseCode
     const button = document.querySelector(`button[onclick="handleAddToSchedule('${courseCode}')"]`);
 
     fetch('../includes/add_course.php', {
@@ -145,12 +146,16 @@ function addToSchedule(courseCode) {
     .then(data => {
         if (data.success) {
             showNotification(data.message, 'success');
-            button.classList.add("animate"); // Trigger animation
 
-            // Remove the 'animate' class after 600ms to reset the animation
-            setTimeout(() => {
-                button.classList.remove("animate");
-            }, 600);
+            // Only add the animate class if the button exists
+            if (button) {
+                button.classList.add("animate"); // Trigger animation
+
+                // Remove the 'animate' class after 600ms to reset the animation
+                setTimeout(() => {
+                    button.classList.remove("animate");
+                }, 600);
+            }
         } else {
             showNotification(data.error, 'error');
         }

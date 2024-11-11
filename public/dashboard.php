@@ -87,7 +87,7 @@ $stmt->close();
                                 <td><?php echo htmlspecialchars($course['instructor']); ?></td>
                                 <td><?php echo htmlspecialchars($course['schedule']); ?></td>
                                 <td>
-                                <button class="button-animate" onclick="dropCourse(<?php echo $course['schedule_id']; ?>)">Drop</button>
+                                <button class="button-animate" onclick="openDropConfirmation(<?php echo $course['schedule_id']; ?>)">Drop</button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -107,60 +107,19 @@ $stmt->close();
     </div>
 </main>
 
+<!-- Custom Modal for Drop Confirmation -->
+<div id="drop-confirmation-modal" class="modal">
+    <div class="modal-content">
+        <h2>Drop Course Confirmation</h2>
+        <p>Are you sure you want to drop this course?</p>
+        <div class="button-container">
+            <button id="confirm-drop">Yes</button>
+            <button id="cancel-drop">No</button>
+        </div>
+    </div>
+</div>
+
 <div id="notification" class="notification"></div>
-
-<script>
-function showNotification(message, type = 'success') {
-    const notification = document.getElementById('notification');
-    notification.innerText = message;
-    notification.className = 'notification show ' + (type === 'error' ? 'error' : 'success');
-
-    // Auto-hide notification after 3 seconds
-    setTimeout(() => {
-        notification.classList.remove('show');
-    }, 3000);
-}
-
-function dropCourse(scheduleId) {
-    fetch('../includes/drop_course.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: 'schedule_id=' + encodeURIComponent(scheduleId)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showNotification(data.message, 'success');
-            document.getElementById(`course-row-${scheduleId}`).remove();
-
-            // Check if there are remaining rows
-            const rows = document.querySelectorAll("tbody tr");
-            if (rows.length === 0) {
-                // Hide the filter container
-                document.querySelector('.filter-container').style.display = 'none';
-
-                // Display the "No courses in your schedule yet." message
-                document.querySelector('.translucent-container').style.display = 'none';
-                document.getElementById('no-results-message').style.display = 'none';
-
-                const noCoursesMessage = document.createElement('p');
-                noCoursesMessage.textContent = 'No courses in your schedule yet.';
-                noCoursesMessage.className = 'text-warning';
-                document.querySelector('main.container').appendChild(noCoursesMessage);
-            }
-        } else {
-            showNotification(data.error, 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('An error occurred, please try again.', 'error');
-    });
-}
-</script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -191,6 +150,11 @@ document.addEventListener("DOMContentLoaded", function () {
         camera.updateProjectionMatrix();
     });
 });
+</script>
+<script>
+    
+
+let scheduleIdToDrop = null;
 
 document.addEventListener("DOMContentLoaded", function () {
     const filterToggle = document.getElementById("filter-toggle");
@@ -200,30 +164,27 @@ document.addEventListener("DOMContentLoaded", function () {
     filterToggle.addEventListener("click", function () {
         filterOptions.classList.toggle("d-none");
     });
-});
 
-
-
-document.addEventListener("DOMContentLoaded", function () {
-    applyFilters(); // Apply filters once on page load
+    // Real-time search and filter application
     document.getElementById("search-bar").addEventListener("input", applyFilters);
     document.querySelectorAll(".day-checkbox").forEach(checkbox => {
         checkbox.addEventListener("change", applyFilters);
     });
+
+    applyFilters(); // Initial call to ensure any existing filters are applied
 });
 
 function applyFilters() {
     const searchTerm = document.getElementById("search-bar").value.toLowerCase();
     const days = Array.from(document.querySelectorAll(".day-checkbox:checked")).map(checkbox => checkbox.value);
-
-    // Pass the filter criteria to the updateTable function
+    
     updateTable(searchTerm, days);
 }
 
 function updateTable(searchTerm, days) {
     const rows = document.querySelectorAll("tbody tr");
-    let anyMatch = false; // Track if there's any match
-    const noResultsMessage = document.getElementById("no-results-message"); // Reference to the message paragraph
+    let anyMatch = false;
+    const noResultsMessage = document.getElementById("no-results-message");
 
     rows.forEach(row => {
         const courseCode = row.querySelector("td:nth-child(1)").textContent.toLowerCase();
@@ -234,7 +195,7 @@ function updateTable(searchTerm, days) {
         // Show or hide the row based on filters
         if (matchesSearch && matchesDay) {
             row.style.display = "";
-            anyMatch = true; // Found at least one match
+            anyMatch = true;
         } else {
             row.style.display = "none";
         }
@@ -243,6 +204,69 @@ function updateTable(searchTerm, days) {
     // Show or hide the "No courses found" message
     noResultsMessage.style.display = anyMatch ? "none" : "block";
 }
-</script>
 
+function showNotification(message, type = 'success') {
+    const notification = document.getElementById('notification');
+    notification.innerText = message;
+    notification.className = 'notification show ' + (type === 'error' ? 'error' : 'success');
+
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+}
+
+function openDropConfirmation(scheduleId) {
+    scheduleIdToDrop = scheduleId;
+    document.getElementById('drop-confirmation-modal').style.display = 'flex';
+}
+
+document.getElementById('confirm-drop').addEventListener('click', function() {
+    if (scheduleIdToDrop) {
+        dropCourse(scheduleIdToDrop);
+        scheduleIdToDrop = null;
+    }
+    document.getElementById('drop-confirmation-modal').style.display = 'none';
+});
+
+document.getElementById('cancel-drop').addEventListener('click', function() {
+    scheduleIdToDrop = null;
+    document.getElementById('drop-confirmation-modal').style.display = 'none';
+});
+
+function dropCourse(scheduleId) {
+    fetch('../includes/drop_course.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'schedule_id=' + encodeURIComponent(scheduleId)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            document.getElementById(`course-row-${scheduleId}`).remove();
+
+            if (!document.querySelectorAll("tbody tr").length) {
+                document.querySelector('.filter-container').style.display = 'none';
+                document.querySelector('.translucent-container').style.display = 'none';
+                document.getElementById('no-results-message').style.display = 'none';
+
+                const noCoursesMessage = document.createElement('p');
+                noCoursesMessage.textContent = 'No courses in your schedule yet.';
+                noCoursesMessage.className = 'text-warning';
+                document.querySelector('main.container').appendChild(noCoursesMessage);
+            }
+        } else {
+            showNotification(data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('An error occurred, please try again.', 'error');
+    });
+}
+
+
+</script>
 <?php include('../includes/footer.php'); ?>

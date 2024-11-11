@@ -25,6 +25,13 @@ if ($schedule_id === false) {
     exit();
 }
 
+// Ensure the database connection is active
+if ($mysqli->connect_error) {
+    error_log("Database connection error: " . $mysqli->connect_error);
+    echo json_encode(['success' => false, 'error' => 'Database connection error. Please try again later.']);
+    exit();
+}
+
 // Prepare the SQL statement to delete the course from the user's schedule
 $stmt = $mysqli->prepare("DELETE FROM schedule WHERE id = ? AND user_id = ?");
 if (!$stmt) {
@@ -35,7 +42,7 @@ if (!$stmt) {
 
 $stmt->bind_param("ii", $schedule_id, $user_id);
 
-// Execute and handle response
+// Execute the deletion and return a response to the user
 if ($stmt->execute()) {
     echo json_encode(['success' => true, 'message' => 'Course successfully dropped from your schedule.']);
 } else {

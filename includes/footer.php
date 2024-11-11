@@ -4,6 +4,9 @@
     (Fall Semester 2024)
     Assignment 3 (footer.php)
 */
+
+// Set the timezone 
+date_default_timezone_set('America/Halifax');
 ?>
 </div> <!-- Closing main container div from header -->
 

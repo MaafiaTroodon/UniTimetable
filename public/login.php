@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_result($user_id, $stored_password);
         $stmt->fetch();
 
-        // Verify the password (plain text comparison if passwords are not hashed)
+        // Plain-text password comparison (for demonstration purposes)
         if ($password === $stored_password) {
             // Set session variables
             $_SESSION['user_id'] = $user_id;
@@ -76,7 +76,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="mb-3">
             <label for="password" class="form-label login-label">Password</label>
-            <input type="password" class="form-control login-input" id="password" name="password" required>
+            <div class="input-group">
+                <input type="password" class="form-control login-input" id="password" name="password" required>
+                <button type="button" class="btn btn-outline-secondary" id="togglePassword">Show</button>
+            </div>
         </div>
         <?php if (!empty($error)): ?>
             <p class="login-error"><?php echo $error; ?></p>
@@ -84,7 +87,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit" class="btn btn-login">Login</button>
     </form>
 </div>
-
+<div class="view-schedule-container">
+    <p>Want to view the course schedule without logging in?</p>
+    <a href="index.php" class="btn-view-schedule">View Course Schedule</a>
+</div>
+<script>
+// Show/Hide Password functionality
+document.getElementById("togglePassword").addEventListener("click", function () {
+    const passwordField = document.getElementById("password");
+    const toggleButton = document.getElementById("togglePassword");
+    if (passwordField.type === "password") {
+        passwordField.type = "text";
+        toggleButton.textContent = "Hide";
+    } else {
+        passwordField.type = "password";
+        toggleButton.textContent = "Show";
+    }
+});
+</script>
 
 <?php
 include('../includes/footer.php');
